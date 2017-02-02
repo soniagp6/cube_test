@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+  <style>
+    body {
+        font-family: Monospace;
+        /* background-color: #f0f0f0; */
+        margin: 0px;
+        overflow: hidden;
+    }
+  </style>
+</head>
+<body style="background:#fff;">
+<script src="../build/three.js"></script>
+<script src="js/renderers/Projector.js"></script>
+<script src="js/renderers/CanvasRenderer.js"></script>
+
+<script src="js/libs/stats.min.js"></script>
+<script src="js/libs/tween.min.js"></script>
+<canvas id="canvas"></canvas>
+<canvas id="canvas2"></canvas>
+<script id="jsbin-javascript">
+var width = window.innerWidth, height = window.innerHeight / 2;
+var size = 512;
+var canvas = document.getElementById('canvas'),
+    ctx = canvas.getContext('2d');
+
+var canvas2 = document.getElementById('canvas2'),
+    ctx2 = canvas2.getContext('2d');
+
+var camera, scene, renderer, geometry, texture, mesh;
+var posY = -1000;
+var rate = 1;
+
+var imgd2 = ctx2.getImageData(0, 0, size, size);
+var pix2 = imgd2.data;
+pix2.length = size * size * 4;
+pix2.fill(255);
+
+// function changeCanvas() {
+//     ctx.font = '600pt Arial';
+//     ctx.fillStyle = 'white';
+//     ctx.fillRect(0, 0, canvas.width, canvas.height);
+//     ctx.fillStyle = 'black';
+//     ctx.textAlign = "center";
+//     ctx.textBaseline = "middle";
+//     ctx.fillText("test", canvas.width / 2, posY);
+
+//     var imgd = ctx.getImageData(0, 0, size, size);
+//     var pix = imgd.data;
+
+
+//     var imgd2 = ctx2.getImageData(0, 0, size, size);
+//     var pix2 = imgd2.data;
+//     pix2.length = size * 4;
+//     pix2.fill(255);
+
+//     for (var i = 0, n = pix.length; i < n; i += 1) {
+
+//         pix[i  ] = pix[i % (size*4) ]; // red
+//         pix[i+1] = pix[i % (size*4)+1]; // green
+//         pix[i+2] = pix[i % (size*4) +2]; // blue
+        
+//         // i+3 is alpha (the fourth element)
+//     }
+
+//     // Draw the ImageData at the given (x,y) coordinates.
+//     ctx2.putImageData(imgd, 0, 0);
+// }
+
+function changeCanvas() {
+    ctx.font = '600pt Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("test", canvas.width / 2, posY);
+
+    var imgd = ctx.getImageData(0, 0, size * 4, 1);
+    var pix = imgd.data;
+    
+
+    for (var i = 0, n = pix2.length - (size * 4); i < n; i += 4) {
+        pix2[i  ] = pix2[i + size*4]; // red
+        pix2[i+1] = pix2[i + 1 + size*4]; // green
+        pix2[i+2] = pix2[i + 2 + size*4]; // blue
+        
+        // i+3 is alpha (the fourth element)
+    }
+
+    for (var i = 0, n = size * 4; i < n; i += 1) {
+        var startpix = pix2.length - (size * 4);
+        pix2[startpix + i  ] = pix[i]; // red
+        pix2[startpix + i+1] = pix[i + 1]; // green
+        pix2[startpix + i+2] = pix[i + 2]; // blue
+        
+        // i+3 is alpha (the fourth element)
+    }
+    // Draw the ImageData at the given (x,y) coordinates.
+    ctx2.putImageData(imgd2, 0, 0);
+}
+
+function init() {
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(width, height);
+    renderer.setClearColor( 0xf0f0f0 );
+    document.body.appendChild(renderer.domElement);
+    
+    scene = new THREE.Scene();
+  
+    camera = new THREE.PerspectiveCamera(70, width / height, 1, 1000);
+    camera.position.z = 700;
+    camera.position.y = 300;
+    var a = new THREE.Vector3( 0, 0, 0 );
+    camera.lookAt( a );
+    scene.add(camera);
+
+    texture = new THREE.Texture(canvas);
+    var material = new THREE.MeshBasicMaterial({ map: texture });
+
+    texture2 = new THREE.Texture(canvas2);
+    var material2 = new THREE.MeshBasicMaterial({ map: texture2 });
+
+
+    
+
+
+    var materials = [
+          new THREE.MeshBasicMaterial({
+              map: texture2
+          }),
+          new THREE.MeshBasicMaterial({
+              map: texture2
+          }),
+          // top of block
+          new THREE.MeshBasicMaterial({
+              map: texture2
+          }),
+          new THREE.MeshBasicMaterial({
+              map: texture
+          }),
+          // front of block
+          new THREE.MeshBasicMaterial({
+              map: texture
+          }),
+          new THREE.MeshBasicMaterial({
+              map: texture
+          })
+       ];
+
+    // geometry = new THREE.CubeGeometry( 200, 200, 200 );
+    // mesh = new THREE.Mesh( geometry, material );
+    // scene.add( mesh );
+
+
+    geometry = new THREE.CubeGeometry(400,400,800,1,1,1);
+    mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+    //mesh.geometry.vertices[1].set(0,0,0);
+    //mesh.position.y = 200;
+    scene.add( mesh );
+
+    // geometry = new THREE.BoxBufferGeometry( 200, 200, 200 );
+    // mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial({color: 0x00ff00}) );
+    // scene.add( mesh );
+
+    geometry2 = new THREE.BoxGeometry( 200, 200, 200 );
+    mesh2 = new THREE.Mesh( geometry2, materials );
+    mesh2.position.x = 200;
+    //scene.add( mesh2 );
+
+
+
+    // var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+    // var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    // var cube = new THREE.Mesh( geometry, material );
+    // scene.add( cube );
+
+
+    scene.add( mesh );
+
+
+    canvas.width = canvas.height = size;
+    canvas2.width = canvas2.height = size;
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+  
+    changeCanvas();
+
+
+
+    posY -=rate;
+    if(posY < -canvas.height/2) posY = canvas.height/2
+    texture.needsUpdate = true;
+    texture2.needsUpdate = true;
+    mesh.geometry.verticesNeedUpdate = true;
+
+    //mesh.rotation.y += 0.01;
+    //mesh2.rotation.y += 0.01;
+    renderer.render(scene, camera);
+}
+
+init();
+animate();
+</script>
+</body>
+</html>
