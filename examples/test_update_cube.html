@@ -16,7 +16,6 @@
 <script src="../build/three.js"></script>
 <script src="js/renderers/Projector.js"></script>
 <script src="js/renderers/CanvasRenderer.js"></script>
-
 <script src="js/libs/stats.min.js"></script>
 <script src="js/libs/tween.min.js"></script>
 <canvas id="canvas"></canvas>
@@ -26,14 +25,11 @@ var width = window.innerWidth, height = window.innerHeight / 2;
 var size = 512;
 var canvas = document.getElementById('canvas'),
     ctx = canvas.getContext('2d');
-
 var canvas2 = document.getElementById('canvas2'),
     ctx2 = canvas2.getContext('2d');
-
 var camera, scene, renderer, geometry, texture, mesh;
 var posY = -1000;
 var rate = 1;
-
 var imgd2 = ctx2.getImageData(0, 0, size, size);
 var pix2 = imgd2.data;
 pix2.length = size * size * 4;
@@ -125,9 +121,6 @@ function init() {
     var material2 = new THREE.MeshBasicMaterial({ map: texture2 });
 
 
-    
-
-
     var materials = [
           new THREE.MeshBasicMaterial({
               map: texture2
@@ -151,47 +144,22 @@ function init() {
           })
        ];
 
-    // geometry = new THREE.CubeGeometry( 200, 200, 200 );
-    // mesh = new THREE.Mesh( geometry, material );
-    // scene.add( mesh );
-
-
     geometry = new THREE.CubeGeometry(400,400,800,1,1,1);
     mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
     //mesh.geometry.vertices[1].set(0,0,0);
     //mesh.position.y = 200;
     scene.add( mesh );
-
-    // geometry = new THREE.BoxBufferGeometry( 200, 200, 200 );
-    // mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial({color: 0x00ff00}) );
-    // scene.add( mesh );
-
     geometry2 = new THREE.BoxGeometry( 200, 200, 200 );
     mesh2 = new THREE.Mesh( geometry2, materials );
     mesh2.position.x = 200;
-    //scene.add( mesh2 );
-
-
-
-    // var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-    // var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-    // var cube = new THREE.Mesh( geometry, material );
-    // scene.add( cube );
-
-
     scene.add( mesh );
-
-
     canvas.width = canvas.height = size;
     canvas2.width = canvas2.height = size;
 }
 
 function animate() {
     requestAnimationFrame(animate);
-  
     changeCanvas();
-
-
 
     posY -=rate;
     if(posY < -canvas.height/2) posY = canvas.height/2
@@ -200,7 +168,6 @@ function animate() {
     mesh.geometry.verticesNeedUpdate = true;
 
     //mesh.rotation.y += 0.01;
-    //mesh2.rotation.y += 0.01;
     renderer.render(scene, camera);
 }
 
